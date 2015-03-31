@@ -17,13 +17,13 @@ owner:
   twitter:        https://twitter.com/Amice13
   facebook:       https://www.facebook.com/KirillZaharov
   github:         https://github.com/Amice13
-#  stackexchange:  
+  #  stackexchange:  
   linkedin:       https://www.linkedin.com/profile/view?id=25055508
-#  instagram:      
-#  flickr:         
-#  tumblr:         
+  #  instagram:      
+  #  flickr:         
+  #  tumblr:         
   # google plus id, include the '+', eg +mmistakes
-  google_plus:    +111814213336765161425
+  google_plus:    111814213336765161425
 
 # Background image to be tiled on all pages
 background: 
