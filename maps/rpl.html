@@ -10,7 +10,7 @@
 <script src="leaflet_files/leaflet-binding-1.0.0/leaflet.js"></script>
 <style>
 svg path {
-	stroke:orange;
+	stroke:green;
 	stroke-opacity:0.2;
 }
 
@@ -21,14 +21,23 @@ svg path:hover {
 }
 
 #main_title {
-background: #282C35;
-color: #FFF;
+	background: #282C35;
+	color: #FFF;
+	font-family: Helvetica;
 }
 
 #main_title h2 {
 	margin: 0px;
-	padding: 15px;
-	font-family: Helvetica;
+	padding: 5px 20px 0px;
+	text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
+    0px -5px 35px rgba(255,255,255,0.3);
+}
+
+#main_title span {
+	margin: 0px;
+	color:#BBB;
+	font-size: 90%;
+	padding: 0px 20px 0px;
 	text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
     0px -5px 35px rgba(255,255,255,0.3);
 }
@@ -43,7 +52,8 @@ color: #FFF;
 
 </head>
 <body style="background-color:white;">
-<div id="main_title"><h2>Результати політичної партії "Радикальна партія Олега Ляшка" на Місцевих виборах 2015 року</h2></div>
+<div id="main_title"><h2>Результати політичної партії "Радикальна партія Олега Ляшка" на Місцевих виборах 2015 року</h2>
+<span>На карті відображено результати виборів до міських та районних рад. В містах із районними в містах радами наведено результати виборів в такі ради.</span></div>
 <div id="htmlwidget_container">
   <div id="htmlwidget-888" style="width:100%;height:400px;" class="leaflet"></div>
 </div>
