@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<title>
+		Результати виборів політичної партії "УКРОП" на Місцевих виборах 2015
+	</title>
+
+	<link type="text/css" rel="stylesheet" href="vendor/font-awesome-4.5.0/css/font-awesome.min.css">
+	<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+	<link type="text/css" rel="stylesheet" href="vendor/waves/waves.min.css">
+	<link type="text/css" rel="stylesheet" href="vendor/wow/animate.css">
+	<link type="text/css" rel="stylesheet" href="css/nativedroid2.css">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css"/>
+	
+	<style>
+
+	body {
+      padding:0;
+      margin:0;
+    }
+
+	.leaflet-control-zoom {
+		display:none;
+	}
+
+    #header {
+      padding:0 1em;
+    }
+    
+    #description {
+      line-height:0px;
+      font-style:italic;
+    }
+
+    #map {
+      top:0px;
+      bottom:0px;
+      left:0px;
+      right:0px;
+      position:absolute;
+      background:#fff;
+    }
+
+    .col {
+      display: inline-block;
+      background: #000000;
+      width: 8px;
+      height: 8px;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+.ui-content {
+    position: absolute;
+    top: 64px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 0 !important;
+}
+
+#map {
+    height: 100%;
+}
+
+		.info {
+			padding: 6px 8px;
+			font: 14px/16px Arial, Helvetica, sans-serif;
+			background: white;
+			background: rgba(255,255,255,0.8);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+		}
+		.info h4 {
+			margin: 0 0 5px;
+			color: #777;
+		}
+
+		.legend {
+			text-align: left;
+			line-height: 18px;
+			color: #555;
+		}
+		.legend i {
+			width: 18px;
+			height: 18px;
+			float: left;
+			margin-right: 8px;
+			opacity: 0.7;
+		}
+
+		.leaflet-control .ui-listview {
+			margin:0em;
+		}
+
+		.ui-listview img {
+			width: initial !important;
+		}
+
+		.small-font p {
+			font-size: 85%;
+		}
+
+		.nd2-sidepanel-profile {
+			padding: 2em 1em 2em 1em;
+		}
+
+		.nd2-sidepanel-profile .profile-thumbnail {
+			width:80%;
+		}
+
+		#leftpanel {
+			width: 640px;
+		}
+
+		.box.profile-text {
+			font-size: 200%;
+		}
+
+	</style>
+</head>
+
+<body>
+	<div data-role="page" id="home" class="ui-content">
+
+		<div data-role="panel" id="leftpanel" data-display="overlay" data-position-fixed="true" >
+
+			<div class='nd2-sidepanel-profile'>
+				<img class='profile-background' src="img/background.png" />
+				<div class="row">
+					<div class='col-xs-2 center-xs'>
+						<div class='box'>
+							<img class="profile-thumbnail" src="img/logo2.png" />
+						</div>
+					</div>
+					<div class='col-xs-10'>
+						<div class='box profile-text'>
+							<strong>УКРОП</strong>
+							<span class='subline'>Українське об'єднання патріотів</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<ul data-role="listview" data-inset="false" id="okrug">
+				<li data-role="list-divider">Перелік кандидатів</li>
+			</ul>
+			<div data-role="collapsible" data-collapsed="false" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-d" data-iconpos="right">
+				<h3>Кандидати до Київської обласної ради</h3>
+					<div id="cand_info"></div>
+			</div>
+			
+		</div>
+
+		<div data-role="header" data-position="fixed" class="wow">
+			<a href="#leftpanel" class="ui-btn ui-btn-left wow fadeIn" data-wow-delay='0.8s'><i class="zmdi zmdi-menu"></i></a>
+			<h1 class="wow fadeIn" data-wow-delay='0.4s'>
+				Прогнозовані показники кандидатів від партії "УКРОП" на парламентських виборах
+			</h1>
+		</div>
+
+		<div role="main" class="ui-content" data-inset="true">
+		<div id="map"></div>
+
+<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet-src.js"></script>
+<script src="http://sashakavun.github.io/leaflet-canvasicon/leaflet-canvasicon.js"></script>
+	<script type="text/javascript" src="ukrop.js"></script>
+
+	<script type="text/javascript">
+
+		var map = L.map('map').setView([50.401699,30.252512], 8);
+
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'mapbox.light'
+		}).addTo(map);
+
+
+		// control that shows state info on hover
+		var info = L.control();
+
+		info.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info');
+			this.update();
+			return this._div;
+		};
+
+		info.update = function (props) {
+			this._div.innerHTML = '' + 
+			(props ?
+				'<h4>Округ обрано</h4><ul data-role="listview" data-icon="false" class="ui-listview">' +
+				'<li class="ui-li-has-thumb"><a href="#" class="ui-btn waves-effect waves-button waves-effect waves-button">' +
+				'<img src="img/32.png" class="ui-thumbnail ui-thumbnail-circular">' +
+				'<h2>Одномандатний виборчий округ №' + props.ovo + '</h2>' +
+				'<p><strong>Кількість виборців - </strong> ' + props.votersNumber + '</p>' +
+				'<p><strong>Кількість виборчих дільниць - </strong> ' + props.districtNum + '</p>' +
+				'<p><strong>Кількість кандидатів від УКРОПа - </strong> ' + props.candNumber + '</p></a></li>' + 
+				'<li class="ui-li-has-thumb"><a href="#" class="ui-btn waves-effect waves-button waves-effect waves-button">' +
+				'<img src="img/33.png" class="ui-thumbnail ui-thumbnail-circular">' +
+				'<h2>Найвищий результат:<br/> ' + props.allCands[0].name + ' (' + props.topPerc + '%)</h2>' +
+				'<p><strong>Кількість отриманих голоcів - </strong> ' + props.allCands[0].votes + '</p>' +
+				'<p><strong>Дата народження - </strong> ' + props.allCands[0].birth + '</p>' +
+				'<p><strong>Освіта - </strong> ' + props.allCands[0].educ + '</p>' +
+				'<p><strong>Посада - </strong> ' + props.allCands[0].job + '</p></a></li>' + 
+				'</ul>'
+				: '<h4>Оберіть округ</h4><span>Наведіть на нього курсором</span>');
+		};
+
+		info.addTo(map);
+
+		function style(feature) {
+			return {
+				weight: 2,
+				opacity: 1,
+				color: '#999',
+				dashArray: '3',
+				fillOpacity: 0.5,
+				fillColor: feature.properties.col  // getColor(feature.properties.density)
+			};
+		}
+
+		function highlightFeature(e) {
+			var layer = e.target;
+
+			layer.setStyle({
+				weight: 5,
+				color: '#666',
+				dashArray: '',
+				fillOpacity: 0.7
+			});
+
+			if (!L.Browser.ie && !L.Browser.opera) {
+				layer.bringToFront();
+			}
+
+			info.update(layer.feature.properties);
+		}
+
+		var geojson;
+
+		function resetHighlight(e) {
+			geojson.resetStyle(e.target);
+			info.update();
+		}
+
+/*		function zoomToFeature(e) {
+			map.fitBounds(e.target.getBounds());
+		} */
+
+		function infoToPanel(e) {
+			console.log(e.target.getBounds());
+			map.fitBounds(e.target.getBounds(),{paddingTopLeft:[640,1]});
+			props = e.target.feature.properties;
+			console.log(props.ovo);
+
+			var cands = ""
+			for (var i = 0; i < props.allCands.length-1 ; i++) {
+				var name = props.allCands[i].name,
+					votes = props.allCands[i].votes,
+					per = props.allCands[i].perc;
+					locper = props.allCands[i].locPerc;
+				cands = cands + 
+					'<li class="ui-li-has-thumb"><a href="#" class="ui-btn waves-effect waves-button waves-effect waves-button">' +
+					'<img src="img/33.png" class="ui-thumbnail ui-thumbnail-circular">' +
+					'<h2>' + name + ' - ' + votes + ' голосів</h2>' +
+					'<p><strong>Результат місцевих виборів - </strong>' + locper + '%</p>' +
+					'<p><strong>Для парламентського округу - </strong>' + per + '</p>' + '</li>';
+				}
+
+
+			obl_info = '<ul data-role="listview" data-icon="false" class="ui-listview">' + cands + '</ul>';
+
+			$('#cand_info').html(obl_info);
+
+			var openMenu = $('a[href="#leftpanel"]');
+			openMenu.click();
+		}
+
+
+		function onEachFeature(feature, layer) {
+			layer.on({
+				mouseover: highlightFeature,
+				mouseout: resetHighlight,
+/*				click: zoomToFeature, */
+				click: infoToPanel
+			});
+		}
+
+		geojson = L.geoJson(ukropData, {
+			style: style,
+			onEachFeature: onEachFeature
+		}).addTo(map);
+
+		map.attributionControl.addAttribution('Межі округів &copy; <a href="http://www.rbc.ua/ukr/vyboru2014/map">РБК-Україна</a>, ' + 
+			'Джерело данних &copy; <a href="http://cvk.gov.ua">ЦВК</a>');
+
+
+		var legend = L.control({position: 'bottomright'});
+
+		legend.onAdd = function (map) {
+
+			var div = L.DomUtil.create('div', 'info legend'),
+				grades = ["0.71%", "0.90%", "1.10%", "1.29%", "1.49%", "1.68%", "1.88%"],
+				colors = ["#F7FCF5", "#DBF1D5", "#AEDEA7", "#74C476", "#37A055", "#0E7734", "#00441B"],
+				labels = [],
+				from, to;
+
+			for (var i = 0; i < grades.length; i++) {
+				from = grades[i];
+				to = grades[i + 1];
+
+				labels.push(
+					'<i style="background:' + colors[i] + '"></i> ' +
+					from + (to ? '&ndash;' + to : '+'));
+			}
+
+			div.innerHTML = labels.join('<br>');
+			return div;
+		};
+
+		legend.addTo(map);
+
+	</script>
+</div>
+</div>
+
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="vendor/waves/waves.min.js"></script>
+<script type="text/javascript" src="vendor/wow/wow.min.js"></script>
+<script type="text/javascript" src="js/nativedroid2.js"></script>
+<script type="text/javascript" src="js/nd2settings.js"></script>
+
+
+
+</body>
+</html>
