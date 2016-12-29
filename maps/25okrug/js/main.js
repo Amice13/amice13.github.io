@@ -10,7 +10,7 @@ Array.prototype.min = function() {
 
 // Inititalize map
 
-var map = L.map('map').setView([48.4847, 35.0062], 12);
+var map = L.map('map').setView([48.4447, 35.0062], 12);
 
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -60,10 +60,11 @@ function onEachFeature(feature, layer) {
   }
 
 function showInfo(e) {
+
   var layer = e.target;
   var info = '<p class="label label-primary">Інформація про дільницю</p>'
   info += '<h3>ВД №' + layer.feature.properties.district + '</h3>';
-  info += "<p><strong>" + titles[app.current_filter.map_filter] + ": ";
+  info += "<p><strong>" + titles[app.current_filter.map_filter+1] + ": ";
   if (titles[app.current_filter.map_filter].indexOf("%") > -1) {
     info += Math.round(layer.feature.properties["d"+(app.current_filter.map_filter+1)]*10000)/100 + "%</strong></p>"
   } else {
@@ -134,6 +135,7 @@ app = new Vue({
   		}},
     'current_filter': {
       handler: function(filter, oldFilter) {
+
         var numbers = data.map(function(d) { return (d.properties['d' + (filter.map_filter + 1)]); });
         numbers = numbers.filter(function(d) { return d != 0; })
         var cur_threshold = d3.scale.linear()
