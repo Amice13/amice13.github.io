@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="js/nv.d3.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+    <script src="js/nv.d3.js"></script>
+
+    <style>
+        text {
+            font: 12px sans-serif;
+        }
+        svg {
+            display: block;
+        }
+        html, body, #chart, svg {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chart">
+    <svg></svg>
+</div>
+
+<script>
+
+var reader = d3.dsv(";", "text/plain; charset=cp1251");
+reader("LostsbyMonths.csv", function(error, data){
+
+  // Find all unique dates in database
+  var all_dates = [];
+  for (d = 0; d < data.length; d++) {
+    var timestamp = Number(new Date(data[d].Mon + ".01." + data[d].Yea));
+    data[d]['timestamp'] = timestamp;
+    all_dates.push(timestamp);
+  }
+  all_dates = unique(all_dates);
+
+  // Find all unique subjects in database
+  var all_subjects = [];
+  for (s = 0; s < data.length; s++) {
+    all_subjects.push(data[s].Branch);
+  }
+  all_subjects = unique(all_subjects);
+
+  // Create null array for database
+  var all_cases = {};
+
+  for (d = 0; d < all_dates.length; d++) {
+    for (s = 0; s < all_subjects.length; s++) {
+      if (all_cases[all_subjects[s]] == null) all_cases[all_subjects[s]] = {};
+      all_cases[all_subjects[s]][all_dates[d]] = 0;
+    }
+  }
+  // Create complete database
+
+  for (d = 0; d < data.length; d++) {
+    all_cases[data[d].Branch][data[d].timestamp] = +data[d].IDCount;
+  }
+
+  // Format database
+
+  var final_data = [];
+  for (subject in all_cases) {
+    single = {};
+    single['key'] = subject;
+    single['values'] = [];
+    for (date in all_cases[subject]) {
+      single['values'].push([Number(date), all_cases[subject][date]]);
+    }
+    final_data.push(single);
+  }
+
+  console.log(final_data);
+
+  nv.addGraph(function() {
+      var chart = nv.models.stackedAreaChart()
+                    .margin({right: 100})
+                    .x(function(d) { return d[0] })   //We can modify the data accessor functions...
+                    .y(function(d) { return d[1] })   //...in case your data is formatted differently.
+                    .rightAlignYAxis(true)      //Let's move the y-axis to the right side.
+                    .showControls(true)       //Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+                    .clipEdge(true);
+
+      //Format x-axis labels with custom function.
+      chart.xAxis
+          .tickFormat(function(d) {
+            return d3.time.format('%x')(new Date(d))
+      });
+
+      chart.yAxis
+          .tickFormat(d3.format(',.2f'));
+
+      d3.select('#chart svg')
+        .datum(final_data)
+        .call(chart);
+
+      nv.utils.windowResize(chart.update);
+
+      return chart;
+    });
+
+});
+
+/*
+nv.addGraph(function() {
+  var chart = nv.models.stackedAreaChart()
+                .x(function(d) { return d[0] })
+                .y(function(d) { return d[1] })
+                .clipEdge(true)
+                .useInteractiveGuideline(true)
+                ;
+
+  chart.xAxis
+      .showMaxMin(false)
+      .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) });
+
+  chart.yAxis
+      .tickFormat(d3.format(',.2f'));
+
+  d3.select('#chart svg')
+    .datum(data)
+      .transition().duration(500).call(chart);
+
+  nv.utils.windowResize(chart.update);
+
+  return chart;
+});
+*/
+
+// Helper function
+
+function unique(arr) {
+    var u = {}, a = [];
+    for(var i = 0, l = arr.length; i < l; ++i){
+        if(!u.hasOwnProperty(arr[i])) {
+            a.push(arr[i]);
+            u[arr[i]] = 1;
+        }
+    }
+    return a;
+}
+
+</script>
+</body>
+</html>
